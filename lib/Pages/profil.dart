@@ -6,6 +6,28 @@ class Profil extends StatelessWidget {
   Map data = {};
   Pegawai pegawai;
 
+  Widget _textView(String title, String value) => Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13.0,
+            color: Colors.white
+          ),
+        ),
+        Text(
+          value,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13.0,
+            color: Colors.white
+          ),
+        ),
+      ],
+  );
+
   @override
   Widget build(BuildContext context) {
 
@@ -27,12 +49,13 @@ class Profil extends StatelessWidget {
 
           if (snapshot.hasData) {
             children = <Widget>[
-              SizedBox(height: 5.0,),
+              SizedBox(height: 10.0,),
               Center(
                 child: Container(
                   width: 200.0,
                   height: 200.0,
                   decoration: BoxDecoration(
+                    border: Border.all(width: 2, color: Colors.orange),
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.fill,
@@ -45,6 +68,7 @@ class Profil extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Card(
+                    color: Colors.orange.shade900,
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Column(
@@ -57,7 +81,7 @@ class Profil extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 20.0,
-                              color: Colors.grey[800]
+                              color: Colors.white
                             ),
                           ),
                           SizedBox(height: 2.0,),
@@ -66,119 +90,20 @@ class Profil extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 13.0,
-                              color: Colors.orange[500]
+                              color: Colors.white
                             ),
                           ),
-                          SizedBox(height: 8.0,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                'Bidang ',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey[400]
-                                ),
-                              ),
-                              Text(
-                                snapshot.data['bidang']['nama_bidang'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.blue[500]
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 4.0,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                'Jabatan ',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey[400]
-                                ),
-                              ),
-                              Text(
-                                snapshot.data['jabatan']['nama_jabatan'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.blue[500]
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 4.0,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                'Status ',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey[400]
-                                ),
-                              ),
-                              Text(
-                                snapshot.data['status']['nama_status'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.blue[500]
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 4.0,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                'Email ',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey[400]
-                                ),
-                              ),
-                              Text(
-                                snapshot.data['pegawai']['email_peg'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.blue[500]
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 4.0,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                'Telepon ',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.grey[400]
-                                ),
-                              ),
-                              Text(
-                                snapshot.data['pegawai']['tlp_peg'],
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  color: Colors.blue[500]
-                                ),
-                              ),
-                            ],
-                          ),
+                          Divider(height: 20, thickness: 1, indent: 10, endIndent: 10, color: Colors.grey.shade300,),
+                          _textView('Bidang', snapshot.data['bidang']['nama_bidang']),
+                          Divider(height: 10, thickness: 1, color: Colors.grey.shade300,),
+                          _textView('Jabatan', snapshot.data['jabatan']['nama_jabatan']),
+                          Divider(height: 10, thickness: 1, color: Colors.grey.shade300,),
+                          _textView('Status', snapshot.data['status']['nama_status']),
+                          Divider(height: 10, thickness: 1, color: Colors.grey.shade300,),
+                          _textView('Email', snapshot.data['pegawai']['email_peg'],),
+                          Divider(height: 10, thickness: 1, color: Colors.grey.shade300,),
+                          _textView('Telepon', snapshot.data['pegawai']['tlp_peg'],),
+                          
                         ],
                       ),
                     ),
@@ -214,8 +139,8 @@ class Profil extends StatelessWidget {
 
           return Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: children,
             ),
           );

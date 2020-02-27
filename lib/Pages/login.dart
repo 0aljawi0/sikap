@@ -1,15 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:sikap/Services/storage.dart';
 import '../Services/pegawai.dart';
 import 'dart:async';
 
 class Login extends StatefulWidget {
+  final Storage storage;
+
+  Login({Key key, @required this.storage}): super(key: key);
+
   @override
   _LoginState createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
   TextEditingController kode = new TextEditingController();
+  String bgImage = 'img/sunrise.jpg';
+
+
+  @override
+  void initState() { 
+    super.initState();
+    _autoLogin();
+  }
+
+  void _autoLogin() async {
+    widget.storage.readStorage()
+      .then((String kode) async {
+        //print(kode);
+        if (kode != null || kode != '') {
+          Pegawai peg = new Pegawai(kode);
+          await peg.auth();
+
+          if (peg.namaPeg != null) {
+            Navigator.pushReplacementNamed(context, '/home', arguments: {
+              'kode' : peg.kdPeg,
+              'nama' : peg.namaPeg,
+            });
+          }
+        }
+      });
+  }
 
   Future<void> _auth() async {
     if(kode.text.length == 0) {
@@ -21,10 +52,11 @@ class _LoginState extends State<Login> {
       if (instance.namaPeg == null) {
         Fluttertoast.showToast(msg: instance.msg, gravity: ToastGravity.TOP);
       } else {
+        await widget.storage.writeStorage(instance.kdPeg);
         Navigator.pushReplacementNamed(context, '/home', arguments: {
-          'kode' : instance.kdPeg,
-          'nama' : instance.namaPeg,
-        });
+            'kode' : instance.kdPeg,
+            'nama' : instance.namaPeg,
+          });
       }
     }
   }
@@ -38,7 +70,7 @@ class _LoginState extends State<Login> {
         children: <Widget>[
           Text(
             title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
           ),
           SizedBox(
             height: 10,
@@ -80,16 +112,26 @@ class _LoginState extends State<Login> {
         TextSpan(
           text: 'SI',
           style: TextStyle(
-              fontSize: 30, fontWeight: FontWeight.w500, color: Colors.black),
+              fontSize: 30, fontWeight: FontWeight.w500, color: Colors.white),
         ),
         TextSpan(
           text: 'K',
-          style: TextStyle(color: Color(0xffe46b10), fontSize: 30),
+          style: TextStyle(
+            color: Colors.orange.shade600, 
+            fontSize: 30, 
+            shadows: [
+              Shadow(
+                blurRadius: 20.0,
+                color: Colors.black,
+                offset: Offset(1.0, 1.0)
+              )
+            ]
+          )
         ),
         TextSpan(
           text: 'AP',
           style: TextStyle(
-              fontSize: 30, fontWeight: FontWeight.w500, color: Colors.black),
+              fontSize: 30, fontWeight: FontWeight.w500, color: Colors.white),
         )
       ]),
     );
@@ -108,27 +150,35 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-          child: Container(
-              height: MediaQuery.of(context).size.height,
-              child: Stack(
-                children: <Widget>[
-                  Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Expanded(flex: 3, child: SizedBox()),
-                          _title(),
-                          SizedBox(height: 50),
-                          _kodeWidget(),
-                          SizedBox(height: 20),
-                          _submitButton(),
-                          Expanded(flex: 2, child: SizedBox())
-                        ],
-                      ))
-                ],
-              ))),
+        child: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/$bgImage'),
+              fit: BoxFit.cover
+            )
+          ),
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: <Widget>[
+              Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(flex: 3, child: SizedBox()),
+                      _title(),
+                      SizedBox(height: 50),
+                      _kodeWidget(),
+                      SizedBox(height: 20),
+                      _submitButton(),
+                      Expanded(flex: 2, child: SizedBox())
+                    ],
+                  ))
+            ],
+          )
+        )
+      ),
     );
   }
 }

@@ -9,15 +9,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image/image.dart' as Img;
 import 'dart:math';
 
-class Absen extends StatefulWidget {
+class AbsenApel extends StatefulWidget {
   final Storage storage;
-  Absen({Key key, @required this.storage}) : super(key: key);
+  AbsenApel({Key key, @required this.storage}) : super(key: key);
 
   @override
-  _AbsenState createState() => _AbsenState();
+  _AbsenApelState createState() => _AbsenApelState();
 }
 
-class _AbsenState extends State<Absen> {
+class _AbsenApelState extends State<AbsenApel> {
   var absenService = AbsenService();
 
   File _image;
@@ -59,26 +59,15 @@ class _AbsenState extends State<Absen> {
       isButtonDisabled = true;
     });
 
-    absenService.postAbsen(kode, settings, _image, latitude, longitude)
+    absenService.postAbsenApel(kode, settings, _image, latitude, longitude)
       .then((res) {
         //print(res);
         if(res['body'] == null) {
           Fluttertoast.showToast(msg: res['message'], gravity: ToastGravity.TOP);
           setState(() {
-            isButtonDisabled = false;
-          });
-
-        } else {
-          setState(() {
             _image = null;
           });
-
-          Navigator.pushNamed(context, '/ijin', arguments: {
-            'kdunik' : res['body']['kdunik'],
-            'ijin' : res['body']['ijin']
-          });
         }
-
       });
   }
 
@@ -100,7 +89,7 @@ class _AbsenState extends State<Absen> {
     } else {
       compressImg = null;
     }
-
+    
     setState(() {
       _image = compressImg;
       isButtonDisabled = false;
@@ -109,52 +98,50 @@ class _AbsenState extends State<Absen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.orange[700],
-          title: Text('Absen'),
-          centerTitle: true,
-          elevation: 0,
-        ),
-        body: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Center(
-                child: GestureDetector(
-                    onTap: () => {
-                      getImageFromCamera()
-                    },
-                    child: Container(
-                      child: _image == null ? Image.asset('assets/img/avatar.png') : Image.file(_image),
-                  ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.orange[700],
+        title: Text('Absen Apel'),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Center(
+              child: GestureDetector(
+                  onTap: () => {
+                    getImageFromCamera()
+                  },
+                  child: Container(
+                    child: _image == null ? Image.asset('assets/img/avatar.png') : Image.file(_image),
                 ),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.all(10.0),
-              child: Text(
-                'Klik gambar untuk mengambil foto',
-                style: TextStyle(fontSize: 12.0, color: Colors.grey.shade700),
-              )
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Center(
-                child: RaisedButton(
-                  color: isButtonDisabled ? Colors.grey.shade300 : Colors.orange.shade600,
-                  onPressed: (isButtonDisabled ? () {
-                    Fluttertoast.showToast(msg: 'Ambil Foto Terlebih Dahulu', gravity: ToastGravity.TOP);
-                  } : () {
-                    postData();
-                  }),
-                  child: Text('Submit'),
-                ),
-              ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Text(
+              'Klik gambar untuk mengambil foto',
+              style: TextStyle(fontSize: 12.0, color: Colors.grey.shade700),
             )
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Center(
+              child: RaisedButton(
+                color: isButtonDisabled ? Colors.grey.shade300 : Colors.orange.shade600,
+                onPressed: (isButtonDisabled ? () {
+                  Fluttertoast.showToast(msg: 'Ambil Foto Terlebih Dahulu', gravity: ToastGravity.TOP);
+                } : () {
+                  postData();
+                }),
+                child: Text('Submit'),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
