@@ -1,5 +1,7 @@
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sikap/Services/profilService.dart';
 import 'package:sikap/Services/storage.dart';
 
 class Home extends StatefulWidget {
@@ -13,10 +15,51 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  ProfilService profilService = new ProfilService();
+
   Map data = {};
   final String dateString = DateFormat.yMMMMEEEEd().add_jms().format(DateTime.now());
 
   String bgImage = 'img/sunrise.jpg';
+  String logo = 'https://www.freeiconspng.com/uploads/no-image-icon-6.png';
+  String namaInstansi = '';
+
+  @override
+  void initState() { 
+    super.initState();
+    _initBackground();
+  }
+
+  Future<void> _initBackground() async {
+    profilService.getProfilApp().then((data) {
+      setState(() {
+        logo = 'http://e-absenku.com/images/profil/'+data['logo_ins'];
+        namaInstansi = data['nama_ins'];
+      });
+    });
+
+    BackgroundFetch.configure(BackgroundFetchConfig(
+        minimumFetchInterval: 15,
+        stopOnTerminate: false,
+        enableHeadless: true,
+        requiresBatteryNotLow: false,
+        requiresCharging: false,
+        requiresStorageNotLow: false,
+        requiresDeviceIdle: false,
+        requiredNetworkType: NetworkType.ANY
+    ), (String taskId) async {
+      // This is the fetch-event callback.
+      print("[BackgroundFetch] Event received $taskId");
+
+      BackgroundFetch.finish(taskId);
+    }).then((int status) {
+      print('[BackgroundFetch] configure success: $status');
+     
+    }).catchError((e) {
+      print('[BackgroundFetch] configure ERROR: $e');
+      
+    });
+  }
 
   Future<Null> _logout() async {
     await widget.storage.writeStorage('');
@@ -30,8 +73,9 @@ class _HomeState extends State<Home> {
     Choice(title: 'Dinas Luar', icon: Icons.directions_bus, link: '/dinas-luar' ),
     Choice(title: 'Data Kehadiran', icon: Icons.view_list, link: '/data-kehadiran' ),
     Choice(title: 'Agenda Kegiatan', icon: Icons.assignment, link: '/agenda-kegiatan'),
+    Choice(title: 'Rekap Apel', icon: Icons.assignment, link: '/data-apel'),
     Choice(title: 'Profil', icon: Icons.assignment_ind, link: '/profil' ),
-    Choice(title: 'Keluar', icon: Icons.arrow_forward, link: 'keluar' )
+    // Choice(title: 'Keluar', icon: Icons.arrow_forward, link: 'keluar' )
   ];
 
 
@@ -64,9 +108,9 @@ class _HomeState extends State<Home> {
                       SizedBox(height: 5.0),
                       Text(dateString, style: TextStyle(color: Colors.white),),
                       SizedBox(height: 5.0),
-                      Image(image: AssetImage('assets/img/cilegon.png'), height: 100.0,),
+                      Image(image: NetworkImage(logo), height: 100.0,),
                       SizedBox(height: 5.0),
-                      Text('Selamat Datang di Sistem Kehadiran Pegawai Dinas Komunikasi dan Informasi Kota Cilegon',
+                      Text('Selamat Datang di Sistem Kehadiran Pegawai '+namaInstansi,
                         style: TextStyle(
                           fontSize: 12.0,
                           color: Colors.white
@@ -100,7 +144,7 @@ class _HomeState extends State<Home> {
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: <Widget>[
-                                    Expanded(child:Icon(choices[index].icon, size: 50.0, color: Colors.orange.shade500)),
+                                    Expanded(child:Icon(choices[index].icon, size: 30.0, color: Colors.orange.shade500)),
                                     Text(choices[index].title, style: TextStyle(fontSize: 10.0, color: Colors.white), textAlign: TextAlign.center, softWrap: true,),
                                     SizedBox(height: 5.0)
                                   ]),
@@ -125,5 +169,3 @@ class Choice {
   final IconData icon;
   final String link;
 }
-
-

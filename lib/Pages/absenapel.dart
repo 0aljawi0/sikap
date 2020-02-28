@@ -26,6 +26,7 @@ class _AbsenApelState extends State<AbsenApel> {
   String longitude = '';
   Map<String, dynamic> settings = {};
   bool isButtonDisabled = true;
+  bool isImageProcess = false;
 
   @override
   void initState() { 
@@ -72,6 +73,9 @@ class _AbsenApelState extends State<AbsenApel> {
   }
 
   Future<void> getImageFromCamera() async {
+    setState(() {
+      isImageProcess = true;
+    });
     var imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
 
     final tempDir =await getTemporaryDirectory();
@@ -93,7 +97,34 @@ class _AbsenApelState extends State<AbsenApel> {
     setState(() {
       _image = compressImg;
       isButtonDisabled = false;
+      isImageProcess = false;
     });
+  }
+
+  Widget _imagePreview() {
+    return Container(
+        child: _image == null ? Image.asset('assets/img/avatar.png') : Image.file(_image),
+    );
+  }
+
+  Widget _imageProcess() {
+    return Center(
+      child: Container(
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              child: CircularProgressIndicator(),
+              width: 60,
+              height: 60,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Text('Gambar Diproses...'),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -111,12 +142,10 @@ class _AbsenApelState extends State<AbsenApel> {
             padding: const EdgeInsets.all(10.0),
             child: Center(
               child: GestureDetector(
-                  onTap: () => {
-                    getImageFromCamera()
-                  },
-                  child: Container(
-                    child: _image == null ? Image.asset('assets/img/avatar.png') : Image.file(_image),
-                ),
+                onTap: () => {
+                  getImageFromCamera()
+                },
+                child: isImageProcess ? _imageProcess() : _imagePreview(),
               ),
             ),
           ),

@@ -2,6 +2,7 @@ library constant;
 
 // TEST SERVER
 const String TEST = 'http://api.e-absenku.com/v1/test';
+const String PROFILAPP = 'http://api.e-absenku.com/v1/get_profil_app';
 
 // REST
 const String AUTH = 'http://api.e-absenku.com/v1/check_auth';
@@ -20,6 +21,8 @@ const String POSTABSENDINAS = 'http://api.e-absenku.com/v1/post_absen_dinas';
 const String GETDATAKEHADIRAN = 'http://api.e-absenku.com/v1/get_data_kehadiran';
 const String GETAGENDA = 'http://api.e-absenku.com/v1/get_agenda';
 const String POSTAGENDA = 'http://api.e-absenku.com/v1/post_agenda';
+const String DELETEAGENDA = 'http://api.e-absenku.com/v1/delete_agenda';
+const String UPDATEPOSPEGAWAI = 'http://api.e-absenku.com/v1/update_posisi_pegawai';
 
 // IMAGES
 const String IMG_PEGAWAI = 'http://e-absenku.com/images/pegawai/';

@@ -37,7 +37,7 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
 
       Pegawai pegawaiService = new Pegawai(kode);
       pegawaiService.getProfil().then((data) {
-        pegawai = data['pegawai'];
+        pegawai = data;
       });
     });
   }

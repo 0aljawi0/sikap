@@ -149,11 +149,10 @@ class AbsenService {
     Map output;
 
     try {
-
       Uri url = Uri.parse(GETDATAKEHADIRAN+'?kd_peg='+kdPeg);
       Response response = await get(url);
       Map data = await jsonDecode(response.body);
-      //print(data);
+      // print(data);
       output = data['body'];
     } catch (e) {
       print(e);

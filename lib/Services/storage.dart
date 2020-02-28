@@ -13,6 +13,11 @@ class Storage {
     return File('$path/auth.txt');
   }
 
+  Future<File> get _localLocationFile async {
+    final path = await _localPath;
+    return File('$path/location.txt');
+  }
+
   Future<String> readStorage() async {
     try {
       final file = await _localFile;
@@ -31,5 +36,25 @@ class Storage {
     final file = await _localFile;
     // Write the file
     file.writeAsString(kode);
+  }
+
+  Future<String> readLocationStorage() async {
+    try {
+      final file = await _localLocationFile;
+
+      // Read the file
+      String kode = await file.readAsString();
+
+      return kode;
+    } catch (e) {
+      // If encountering an error, return 0
+      return '';
+    }
+  }
+
+  Future<void> writeLocationStorage(String latitude, String longitude) async {
+    final file = await _localLocationFile;
+    // Write the file
+    file.writeAsString(latitude+'/'+longitude);
   }
 }

@@ -27,6 +27,7 @@ class _DinasLuarState extends State<DinasLuar> {
   String longitude = '';
   Map<String, dynamic> settings = {};
   bool isButtonDisabled = true;
+  bool isImageProcess = false;
   TextEditingController kdDinasLuar = new TextEditingController();
 
   @override
@@ -75,6 +76,9 @@ class _DinasLuarState extends State<DinasLuar> {
   }
 
   Future<void> getImageFromCamera() async {
+    setState(() {
+      isImageProcess = true;
+    });
     var imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
 
     final tempDir =await getTemporaryDirectory();
@@ -96,6 +100,7 @@ class _DinasLuarState extends State<DinasLuar> {
     setState(() {
       _image = compressImg;
       isButtonDisabled = false;
+      isImageProcess = false;
     });
   }
 
@@ -126,6 +131,32 @@ class _DinasLuarState extends State<DinasLuar> {
     );
   }
 
+  Widget _imagePreview() {
+    return Container(
+        child: _image == null ? Image.asset('assets/img/avatar.png') : Image.file(_image),
+    );
+  }
+
+  Widget _imageProcess() {
+    return Center(
+      child: Container(
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              child: CircularProgressIndicator(),
+              width: 60,
+              height: 60,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Text('Gambar Diproses...'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,12 +173,10 @@ class _DinasLuarState extends State<DinasLuar> {
                 padding: const EdgeInsets.all(10.0),
                 child: Center(
                   child: GestureDetector(
-                      onTap: () => {
-                        getImageFromCamera()
-                      },
-                      child: Container(
-                        child: _image == null ? Image.asset('assets/img/avatar.png') : Image.file(_image),
-                    ),
+                    onTap: () => {
+                      getImageFromCamera()
+                    },
+                    child: isImageProcess ? _imageProcess() : _imagePreview(),
                   ),
                 ),
               ),
@@ -161,7 +190,7 @@ class _DinasLuarState extends State<DinasLuar> {
               SizedBox(height: 5.0,),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: _entryField('Kode Dinas', kdDinasLuar),
+                child: _entryField('No Surat Dinas', kdDinasLuar),
               ),
               SizedBox(height: 5.0,),
               Padding(

@@ -3,26 +3,24 @@ import 'package:intl/intl.dart';
 import 'package:sikap/Services/absenService.dart';
 import 'package:sikap/Services/storage.dart';
 
-class DataKehadiran extends StatefulWidget {
+class DataApel extends StatefulWidget {
   final Storage storage;
-  DataKehadiran({Key key, @required this.storage}) : super(key: key);
+  DataApel({Key key, @required this.storage}) : super(key: key);
 
   @override
-  _DataKehadiranState createState() => _DataKehadiranState();
+  _DataApelState createState() => _DataApelState();
 }
 
-class _DataKehadiranState extends State<DataKehadiran> {
+class _DataApelState extends State<DataApel> {
   AbsenService absenService = new AbsenService();
   String kdPeg;
   Map data = {
-    'jumlah_dl': 0,
-    'jumlah_ijin': 0,
-    'jumlah_masuk': 0,
-    'jumlah_sakit': 0,
-    'jumlah_alfa': 0,
-    'jumlah_cuti': 0,
-    'jumlah_dt': 0,
-    'jumlah_pti': 0
+    'jumlah_dl': '',
+    'jumlah_ijin': '',
+    'jumlah_masuk': '',
+    'jumlah_sakit': '',
+    'jumlah_alfa': '',
+    'jumlah_cuti': ''
   };
   List dataAbsensi = [];
 
@@ -36,17 +34,8 @@ class _DataKehadiranState extends State<DataKehadiran> {
 
       absenService.getDataKehadiran(kode).then((res) {
         setState(() {
-          data = {
-            'jumlah_dl': res['jumlahDL'],
-            'jumlah_ijin': res['jumlahIjin'],
-            'jumlah_masuk': res['jumlahMasuk'],
-            'jumlah_sakit': res['jumlahSakit'],
-            'jumlah_alfa': res['jumlahAlfa'],
-            'jumlah_cuti': res['jumlahCuti'],
-            'jumlah_dt': res['jumlahDT'],
-            'jumlah_pti': res['jumlahPTI']
-          };
-          dataAbsensi = res['dataAbsensi'];
+          data = res;
+          dataAbsensi = res['data_absensi'];
         });
       });
     });
@@ -133,22 +122,6 @@ class _DataKehadiranState extends State<DataKehadiran> {
           ),
           label: Text('Cuti')
         ),
-
-        Chip(
-          avatar: CircleAvatar(
-            backgroundColor: Colors.purple.shade500,
-            child: Text(data['jumlah_dt'].toString()),
-          ),
-          label: Text('DT')
-        ),
-
-        Chip(
-          avatar: CircleAvatar(
-            backgroundColor: Colors.purple.shade500,
-            child: Text(data['jumlah_pti'].toString()),
-          ),
-          label: Text('PTI')
-        ),
       ],
     );
   }
@@ -158,7 +131,7 @@ class _DataKehadiranState extends State<DataKehadiran> {
     return Scaffold(
        appBar: AppBar(
           backgroundColor: Colors.orange[700],
-          title: Text('Data Kehadiran'),
+          title: Text('Rekap Apel'),
           centerTitle: true,
           elevation: 0,
         ),

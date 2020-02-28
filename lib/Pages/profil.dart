@@ -4,7 +4,6 @@ import '../Library/constant.dart';
 
 class Profil extends StatelessWidget {
   Map data = {};
-  Pegawai pegawai;
 
   Widget _textView(String title, String value) => Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -32,7 +31,8 @@ class Profil extends StatelessWidget {
   Widget build(BuildContext context) {
 
     data = data.isNotEmpty ? data : ModalRoute.of(context).settings.arguments;
-    pegawai = new Pegawai(data['kode']);
+    // print (data);
+    Pegawai pegawai = new Pegawai(data['kode']);
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +44,7 @@ class Profil extends StatelessWidget {
       body: FutureBuilder(
         future: pegawai.getProfil(),
         builder: (BuildContext context, AsyncSnapshot<Map<dynamic, dynamic>> snapshot) {
-          //print(snapshot);
+          // print(snapshot.data);
           List<Widget> children;
 
           if (snapshot.hasData) {
@@ -59,7 +59,7 @@ class Profil extends StatelessWidget {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.fill,
-                      image: snapshot.data['pegawai']['foto_peg'] != null ? NetworkImage(IMG_PEGAWAI+snapshot.data['pegawai']['foto_peg']) : AssetImage('assets/img/avatar.png'),
+                      image: snapshot.data['foto_peg'] != null ? NetworkImage(IMG_PEGAWAI+snapshot.data['foto_peg']) : AssetImage('assets/img/avatar.png'),
                     ),
                   ),
                 ),
@@ -77,7 +77,7 @@ class Profil extends StatelessWidget {
                         children: <Widget>[
                           SizedBox(height: 3.0,),
                           Text(
-                            snapshot.data['pegawai']['nama_peg'],
+                            snapshot.data['nama_peg'] != '' ? snapshot.data['nama_peg'] : '-',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 20.0,
@@ -86,7 +86,7 @@ class Profil extends StatelessWidget {
                           ),
                           SizedBox(height: 2.0,),
                           Text(
-                            'NIP. '+snapshot.data['pegawai']['nip']+ ' / ID ' + snapshot.data['pegawai']['id_peg'],
+                            'NIP. '+snapshot.data['nip']+ ' / ID ' + snapshot.data['id_peg'],
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 13.0,
@@ -94,15 +94,15 @@ class Profil extends StatelessWidget {
                             ),
                           ),
                           Divider(height: 20, thickness: 1, indent: 10, endIndent: 10, color: Colors.grey.shade300,),
-                          _textView('Bidang', snapshot.data['bidang']['nama_bidang']),
+                          _textView('Bidang', snapshot.data['nama_bidang'] != '' ? snapshot.data['nama_bidang'] : '-'),
                           Divider(height: 10, thickness: 1, color: Colors.grey.shade300,),
-                          _textView('Jabatan', snapshot.data['jabatan']['nama_jabatan']),
+                          _textView('Jabatan', snapshot.data['nama_jabatan'] != '' ? snapshot.data['nama_jabatan'] : '-'),
                           Divider(height: 10, thickness: 1, color: Colors.grey.shade300,),
-                          _textView('Status', snapshot.data['status']['nama_status']),
+                          _textView('Status', snapshot.data['nama_status'] != '' ? snapshot.data['nama_status'] : '-'),
                           Divider(height: 10, thickness: 1, color: Colors.grey.shade300,),
-                          _textView('Email', snapshot.data['pegawai']['email_peg'],),
+                          _textView('Email', snapshot.data['email_peg'] != '' ? snapshot.data['email_peg'] : '-'),
                           Divider(height: 10, thickness: 1, color: Colors.grey.shade300,),
-                          _textView('Telepon', snapshot.data['pegawai']['tlp_peg'],),
+                          _textView('Telepon', snapshot.data['tlp_peg'] != '' ? snapshot.data['tlp_peg'] : '-'),
                           
                         ],
                       ),

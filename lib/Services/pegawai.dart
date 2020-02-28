@@ -27,15 +27,15 @@ class Pegawai {
     }
   }
 
-  Future<Map<String, dynamic>> getProfil() async {
+  Future<Map> getProfil() async {
     Map data = {};
 
     try {
       String url = PROFIL+'?kode='+kdPeg;
       Response response = await get(url);
-      data = jsonDecode(response.body);
+      data = await jsonDecode(response.body);
 
-      if (data['body']['pegawai'] != null) {
+      if (data['body'] != null) {
         data = data['body'];
         msg = "Sukses mengambil data";
       } else {
@@ -47,5 +47,22 @@ class Pegawai {
     }
 
     return data;
+  }
+
+  Future<void> updatePosisiPegawai(String kdPeg, String latitude, String longitude) async {
+    try {
+      Uri url = Uri.parse(UPDATEPOSPEGAWAI);
+      Response response = await post(url, body: {
+        'kd_peg': kdPeg,
+        'latitude': latitude,
+        'longitude': longitude
+      });
+
+      Map data = jsonDecode(response.body);
+      print(data['message']);
+    } catch (e) {
+      print(e);
+    }
+    return null;
   }
 }

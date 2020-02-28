@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sikap/Services/agendaService.dart';
 import 'package:sikap/Services/storage.dart';
 
@@ -24,7 +25,7 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
 
   Future _initIjin() async {
     widget.storage.readStorage().then((kode) {
-      agendaService.getAgenda().then((list) {
+      agendaService.getAgenda(kode).then((list) {
         setState(() {
           data = list;
           kdPeg = kode;
@@ -38,50 +39,55 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
       children: <Widget>[
         Icon(icon, size: 14.0, color: color),
         SizedBox(width: 3.0),
-        Text(
-          text,
-          style: TextStyle(color: color, fontSize: 14.0),
-        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.8,
+          child: Text(
+            text,
+            softWrap: true,
+            textAlign: TextAlign.left,
+            style: TextStyle(color: color, fontSize: 14.0),
+          ),
+        )
       ],
     );
   }
 
-  Widget _listData(String acara, String status, String tglKegiatan, String lokasi, String keterangan) {
+  Widget _listData(String kdPeg, String kdKegiatan, String acara, String status, String tglKegiatan, String lokasi, String keterangan) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
+      child: Container(
+        padding: EdgeInsets.all(8.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 5.0),
             Text(
               acara,
               style: TextStyle(color: Colors.orange.shade600, fontSize: 20.0),
             ),
             
-            SizedBox(height: 5.0),
             _textView(tglKegiatan, Icons.date_range, Colors.grey.shade500),
             
-            SizedBox(height: 5.0),
             _textView(lokasi, Icons.map, Colors.green.shade500),
-            
-            SizedBox(height: 5.0),
+
             _textView(keterangan, Icons.details, Colors.green.shade500),
             
             SizedBox(height: 8.0),
             Row(
               mainAxisAlignment:  MainAxisAlignment.end,
               children: <Widget>[
-                Chip(
-                  avatar: CircleAvatar(
-                    backgroundColor: int.parse(status) == 1 ? Colors.green.shade500 : Colors.green.shade500,
-                    child: Icon(int.parse(status) == 1  ? Icons.check : Icons.remove, color: Colors.white,),
-                  ),
-                  label: Text(int.parse(status) == 1 ? 'Aktif' : 'Nonaktif')
+                Icon(int.parse(status) == 1  ? Icons.check : Icons.remove,
+                  color: int.parse(status) == 1 ? Colors.green.shade500 : Colors.red.shade500,
+                  size: 12,
                 ),
+                Text(int.parse(status) == 1 ? 'Aktif' : 'Nonaktif',
+                  style: TextStyle(color: int.parse(status) == 1 ? Colors.green.shade500 : Colors.red.shade500),
+                ),
+                SizedBox(width: 8.0),
+                kdPeg == '' ? SizedBox.shrink() : _deleteButtons(kdKegiatan)
               ],
-            )
+            ),
+
+            
           ],
         ),
       ),
@@ -96,6 +102,8 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
         itemBuilder: (context, index) {
           //print(data);
           return _listData (
+              data[index]['kd_peg'] != '' ? data[index]['kd_peg'] : '',
+              data[index]['kd_kegiatan'],
               data[index]['acara'],
               data[index]['status_keg'],
               data[index]['tgl_kegiatan'],
@@ -104,6 +112,25 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
           );
         }
       ),
+    );
+  }
+
+  Widget _deleteButtons(String kdKegiatan) {
+    return IconButton(
+      onPressed: () {
+        agendaService.deleteAgenda(kdKegiatan).then((body) {
+          if(body['message'] != null || body['message'] != '') {
+            Fluttertoast.showToast(msg: body['message'], gravity: ToastGravity.TOP);
+            agendaService.getAgenda(kdPeg).then((list) {
+              setState(() {
+                data = list;
+              });
+            });
+          }
+        });
+      },
+      icon: Icon(Icons.remove_circle_outline),
+      color: Colors.red.shade500,
     );
   }
 
@@ -122,7 +149,7 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
             dynamic res = await Navigator.pushNamed(context, '/add-agenda');
             if (res != null) {
               if(res['status'] == 200) {
-                agendaService.getAgenda().then((list) {
+                agendaService.getAgenda(kdPeg).then((list) {
                   setState(() {
                     data = list;
                   });

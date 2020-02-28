@@ -139,12 +139,16 @@ class _AddPengajuanIjinState extends State<AddPengajuanIjin> {
         children: <Widget>[
           SizedBox(height: 5.0),
           Row (
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget> [
-              _selectIjin(),
-              SizedBox(width: 2.0),
-              _datePicker(),
+              _selectIjin(),             
             ]
+          ),
+          Row (
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              _datePicker(),
+            ],
           ),
           SizedBox(height: 5.0),
           _entryField('Keterangan', keperluan),

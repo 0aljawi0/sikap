@@ -4,11 +4,11 @@ import 'dart:convert';
 import '../Library/constant.dart';
 
 class AgendaService {
-  Future<List> getAgenda () async {
+  Future<List> getAgenda (String kdPeg) async {
     List output;
 
     try {
-      Uri url = Uri.parse(GETAGENDA);
+      Uri url = Uri.parse(GETAGENDA+'?kd_peg=$kdPeg');
       Response response = await get(url);
       Map data = await jsonDecode(response.body);
       List body = data['body'];
@@ -33,6 +33,21 @@ class AgendaService {
         'ket_keg': keterangan
       };
       Response response = await post(url, body: body);
+      Map data = await jsonDecode(response.body);
+      output = data;
+    } catch (e) {
+      print(e);
+    }
+
+    return output;
+  }
+
+  Future<Map> deleteAgenda(String kdKegiatan) async {
+    Map output;
+
+    try {
+      Uri url = Uri.parse(DELETEAGENDA+'?kd_kegiatan=$kdKegiatan');
+      Response response = await get(url);
       Map data = await jsonDecode(response.body);
       output = data;
     } catch (e) {

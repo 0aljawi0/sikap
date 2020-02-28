@@ -110,14 +110,14 @@ class _LoginState extends State<Login> {
       textAlign: TextAlign.center,
       text: TextSpan(children: [
         TextSpan(
-          text: 'SI',
+          text: 'e',
           style: TextStyle(
-              fontSize: 30, fontWeight: FontWeight.w500, color: Colors.white),
+              fontSize: 30, fontWeight: FontWeight.w500, color: Colors.orange.shade600),
         ),
         TextSpan(
-          text: 'K',
+          text: '-',
           style: TextStyle(
-            color: Colors.orange.shade600, 
+            color: Colors.orange, 
             fontSize: 30, 
             shadows: [
               Shadow(
@@ -129,7 +129,7 @@ class _LoginState extends State<Login> {
           )
         ),
         TextSpan(
-          text: 'AP',
+          text: 'Absenku',
           style: TextStyle(
               fontSize: 30, fontWeight: FontWeight.w500, color: Colors.white),
         )

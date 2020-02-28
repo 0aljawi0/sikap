@@ -36,7 +36,7 @@ class _IjinState extends State<Ijin> {
     absenService.postIjin(kdPeg, data['kdunik'], data['ijin'], keperluan.text, keterangan.text)
       .then((res) {
         //print(res);
-        if (res != '') {
+        if (res != '' || res != null) {
           Fluttertoast.showToast(msg: res, gravity: ToastGravity.TOP);
           Navigator.pop(context);
         }
