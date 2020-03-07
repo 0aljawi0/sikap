@@ -13,6 +13,7 @@ const String AUTH = 'https://api.bravosolutionindonesia.com/v1/check_auth';
 const String PROFIL = 'https://api.bravosolutionindonesia.com/v1/get_profil';
 const String SETTING = 'https://api.bravosolutionindonesia.com/v1/get_setting';
 const String ABSEN = 'https://api.bravosolutionindonesia.com/v1/post_absen';
+const String ABSENSHIF = 'https://api.bravosolutionindonesia.com/v1/post_absen_shif';
 const String ABSENAPEL = 'https://api.bravosolutionindonesia.com/v1/post_absen_apel';
 const String IJINABSEN = 'https://api.bravosolutionindonesia.com/v1/post_ijin_absen';
 const String GETIJIN = 'https://api.bravosolutionindonesia.com/v1/get_ijin';
@@ -29,7 +30,7 @@ const String POSTAGENDA = 'https://api.bravosolutionindonesia.com/v1/post_agenda
 const String DELETEAGENDA = 'https://api.bravosolutionindonesia.com/v1/delete_agenda';
 const String UPDATEPOSPEGAWAI = 'https://api.bravosolutionindonesia.com/v1/update_posisi_pegawai';
 const String UPDATEPROFILPEGAWAI = 'https://api.bravosolutionindonesia.com/v1/update_profil_pegawai';
-const String GETDATAABSEN = 'https://api.bravosolutionindonesia.com/v1/update_data_absen';
+const String GETDATAABSEN = 'https://api.bravosolutionindonesia.com/v1/get_data_absen';
 
 // IMAGES
 const String IMG_PEGAWAI = 'https://bravosolutionindonesia.com/e-absen/images/pegawai/';

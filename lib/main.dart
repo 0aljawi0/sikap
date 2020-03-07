@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:sikap/Pages/absenShif.dart';
 import 'package:sikap/Pages/absenapel.dart';
 import 'package:sikap/Pages/addAgenda.dart';
 import 'package:sikap/Pages/addPengajuanIjin.dart';
@@ -44,6 +45,7 @@ void main() {
         '/login': (BuildContext context) => new Login(storage: storage),
         '/profil': (BuildContext context) => new Profil(),
         '/absen': (BuildContext context) => new Absen(storage: storage),
+        '/absen-shif': (BuildContext context) => new AbsenShif(storage: storage),
         '/absen-apel': (BuildContext context) => new AbsenApel(storage: storage),
         '/pengajuan-ijin': (BuildContext context) => new PengajuanIjin(storage: storage),
         '/dinas-luar': (BuildContext context) => new DinasLuar(storage: storage),

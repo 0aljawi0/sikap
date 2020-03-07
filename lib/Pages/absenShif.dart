@@ -9,15 +9,15 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image/image.dart' as Img;
 import 'dart:math';
 
-class Absen extends StatefulWidget {
+class AbsenShif extends StatefulWidget {
   final Storage storage;
-  Absen({Key key, @required this.storage}) : super(key: key);
+  AbsenShif({Key key, @required this.storage}) : super(key: key);
 
   @override
-  _AbsenState createState() => _AbsenState();
+  _AbsenShifState createState() => _AbsenShifState();
 }
 
-class _AbsenState extends State<Absen> {
+class _AbsenShifState extends State<AbsenShif> {
   var absenService = AbsenService();
 
   File _image;
@@ -62,9 +62,9 @@ class _AbsenState extends State<Absen> {
       isSubmitProcess = true;
     });
 
-    absenService.postAbsen(kode, settings, _image, latitude, longitude)
+    absenService.postAbsenShif(kode, settings, _image, latitude, longitude)
       .then((res) {
-        //print('RESPONSE ABSEN SHIF: ' + res.toString());
+        print('RESPONSE ABSEN SHIF: ' + res.toString());
 
         if(res['status'] == 200) {
 
@@ -231,7 +231,7 @@ class _AbsenState extends State<Absen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.orange[700],
-          title: Text('Absen'),
+          title: Text('Absen Shif'),
           centerTitle: true,
           elevation: 0,
         ),

@@ -31,8 +31,8 @@ class _HomeState extends State<Home> {
   String logo = 'https://www.freeiconspng.com/uploads/no-image-icon-6.png';
   String namaInstansi = '';
 
-  String jamMasuk = 'Belum Absen Hari Ini';
-  String jamPulang = 'Belum Absen Hari Ini';
+  String jamMasuk = '';
+  String jamPulang = '';
 
   final List<Message> messages = [];
 
@@ -46,8 +46,8 @@ class _HomeState extends State<Home> {
     return absenService.getDataAbsen(kdPeg).then((res) {
       if (res['body'] != null) {
         setState(() {
-          jamMasuk = res['jam_masuk'] == '' ? 'Belum Absen Hari Ini' : res['jam_masuk'];
-          jamPulang = res['jam_pulang'] == '' ? 'Belum Absen Hari Ini' : res['jam_pulang'];
+            jamMasuk = res['body']['waktu_masuk'];
+            jamPulang = res['body']['waktu_pulang'];
         });
       }
     });
@@ -65,8 +65,8 @@ class _HomeState extends State<Home> {
       absenService.getDataAbsen(kode).then((res) {
         if (res['body'] != null) {
           setState(() {
-            jamMasuk = res['jam_masuk'] == '' ? 'Belum Absen Hari Ini' : res['jam_masuk'];
-            jamPulang = res['jam_pulang'] == '' ? 'Belum Absen Hari Ini' : res['jam_pulang'];
+            jamMasuk = res['body']['waktu_masuk'];
+            jamPulang = res['body']['waktu_pulang'];
           });
         }
       });
@@ -143,6 +143,7 @@ class _HomeState extends State<Home> {
 
   List<Choice> choices = <Choice>[
     Choice(title: 'Absen', icon: Icons.check_box, link: '/absen' ),
+    Choice(title: 'Absen Shif', icon: Icons.check_box, link: '/absen-shif' ),
     Choice(title: 'Absen Apel', icon: Icons.check_circle, link: '/absen-apel' ),
     Choice(title: 'Pengajuan Izin', icon: Icons.format_list_bulleted, link: '/pengajuan-ijin' ),
     Choice(title: 'Dinas Luar', icon: Icons.directions_bus, link: '/dinas-luar' ),

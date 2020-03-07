@@ -41,15 +41,52 @@ class AbsenService {
       request.fields['longitude'] = longitude;
       request.fields['latitude_kantor'] = settings['setting']['lat_kantor'];
       request.fields['longitude_kantor'] = settings['setting']['long_kantor'];
+      request.fields['kd_shif'] = settings['shif']['kd_shif'];
       request.fields['jam_masuk'] = settings['shif']['waktu_masuk'];
       request.fields['jam_pulang'] = settings['shif']['waktu_pulang'];
       request.fields['radius'] = settings['setting']['radius_absen'];
       request.files.add(multipartFile);
-      print(latitude+' '+longitude);
+      // print(latitude+' '+longitude);
 
       StreamedResponse response = await request.send();
       String resString = await response.stream.bytesToString();
-      print(resString);
+      // print(resString);
+      Map data = await jsonDecode(resString);
+      output = data;
+    } catch (e) {
+      print(e);
+    }
+    //print(output);
+    return output;
+  }
+
+  Future<Map<String, dynamic>> postAbsenShif(String kode, Map<String, dynamic> settings, File image, String latitude, String longitude) async {
+    Map<String, dynamic> output;
+    
+    try {
+      ByteStream stream = new ByteStream(DelegatingStream.typed(image.openRead()));
+      var length = await image.length();
+      Uri url = Uri.parse(ABSENSHIF);
+      MultipartRequest request = new MultipartRequest('POST', url);
+      MultipartFile multipartFile = new MultipartFile('image', stream, length, filename: basename(image.path));
+
+      //"-6.180585","106.620201",
+      request.fields['kd_peg'] = kode;
+      request.fields['latitude'] = latitude;
+      request.fields['longitude'] = longitude;
+      request.fields['latitude_kantor'] = settings['setting']['lat_kantor'];
+      request.fields['longitude_kantor'] = settings['setting']['long_kantor'];
+      request.fields['kd_shif'] = settings['shif']['kd_shif'];
+      request.fields['jam_masuk'] = settings['shif']['waktu_masuk'];
+      request.fields['jam_pulang'] = settings['shif']['waktu_pulang'];
+      request.fields['radius'] = settings['setting']['radius_absen'];
+      request.files.add(multipartFile);
+      // print(latitude+' '+longitude);
+      // print(settings);
+
+      StreamedResponse response = await request.send();
+      String resString = await response.stream.bytesToString();
+      // print(resString);
       Map data = await jsonDecode(resString);
       output = data;
     } catch (e) {
@@ -185,7 +222,7 @@ class AbsenService {
       Uri url = Uri.parse(GETDATAABSEN+'?kd_peg='+kdPeg);
       Response response = await get(url);
       Map data = await jsonDecode(response.body);
-      // print(data);
+      print('DATA ABSEN '+data.toString());
       output = data;
     } catch (e) {
       print(e);
