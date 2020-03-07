@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sikap/Services/ijinService.dart';
+import 'package:sikap/Services/messaging.dart';
 import 'package:sikap/Services/pegawai.dart';
 import 'package:sikap/Services/storage.dart';
 
@@ -13,6 +14,7 @@ class PengajuanIjin extends StatefulWidget {
 }
 
 class _PengajuanIjinState extends State<PengajuanIjin> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
   IjinService ijinService = new IjinService();
 
   String kdPeg = '';
@@ -37,9 +39,62 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
 
       Pegawai pegawaiService = new Pegawai(kode);
       pegawaiService.getProfil().then((data) {
+        print(data);
         pegawai = data;
       });
     });
+  }
+
+  Future<Null> _refresh() {
+    return ijinService.getIjin(kdPeg).then((list) {
+      setState(() {
+        data = list;
+      });
+    });
+  }
+
+  Future<void> _confirm(String kdIjin) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Konfirmasi'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Apakah anda yakin?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Batal'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                //Fluttertoast.showToast(msg: 'Regret', toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
+              },
+            ),
+            SizedBox(width: 5.0),
+            FlatButton(
+              child: Text('OK'),
+              onPressed: () {
+                ijinService.deleteIjinPengajuan(kdIjin).then((body) {
+                  if(body['message'] != null || body['message'] != '') {
+                    Fluttertoast.showToast(msg: body['message'], toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
+                    ijinService.getIjin(kdPeg).then((list) {
+                      setState(() {
+                        data = list;
+                      });
+                    });
+                  }
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _textView(String text, IconData icon, Color color) {
@@ -63,16 +118,7 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
         SizedBox(width: 8.0),
         diketahui == '' || diketahui == null ? IconButton(
           onPressed: () {
-            ijinService.deleteIjinPengajuan(kdIjin).then((body) {
-              if(body['message'] != null || body['message'] != '') {
-                Fluttertoast.showToast(msg: body['message'], gravity: ToastGravity.TOP);
-                ijinService.getIjin(kdPeg).then((list) {
-                  setState(() {
-                    data = list;
-                  });
-                });
-              }
-            });
+            _confirm(kdIjin);
           },
           icon: Icon(Icons.remove_circle_outline),
           color: Colors.red.shade500,
@@ -81,7 +127,7 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
     );
   }
 
-  Widget _approveAndRejectButton(String kdIjin, String diketahui) {
+  Widget _approveAndRejectButton(String kdIjin, String diketahui, String namaKet, String fcmToken) {
     return Row (
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
@@ -90,6 +136,7 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
           onPressed: () {
             ijinService.rejectIjinPengajuan(kdIjin).then((body) {
               if(body['message'] != null || body['message'] != '') {
+                sendNotification('Ditolak', namaKet, fcmToken);
                 Fluttertoast.showToast(msg: body['message'], gravity: ToastGravity.TOP);
                 ijinService.getIjin(kdPeg).then((list) {
                   setState(() {
@@ -107,6 +154,7 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
           onPressed: () {
             ijinService.approveIjinPengajuan(kdIjin).then((body) {
               if(body['message'] != null || body['message'] != '') {
+                sendNotification('Diterima', namaKet, fcmToken);
                 Fluttertoast.showToast(msg: body['message'], gravity: ToastGravity.TOP);
                 ijinService.getIjin(kdPeg).then((list) {
                   setState(() {
@@ -123,6 +171,21 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
     );
   }
 
+  Future sendNotification(String status, String namaKet, String fcmToken) async {
+    final response = await Messaging.sendTo(
+      title: 'Izin Anda $status',
+      body: 'Izin Anda mengenai $namaKet telah $status',
+      fcmToken: fcmToken,
+    );
+
+    if (response.statusCode != 200) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content:
+            Text('[${response.statusCode}] Error message: ${response.body}'),
+      ));
+    }
+  }
+
   Widget _listData (
     String namaKet,
     String nip,
@@ -135,7 +198,8 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
     String approvalOleh,
     String statusIjin,
     String diketahui,
-    String kdIjin
+    String kdIjin,
+    String fcmToken
   ) {
     return Card(
       child: Padding(
@@ -170,7 +234,7 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
             
             SizedBox(height: 10.0),
             approvalOleh == pegawai['kd_jabatan'] && int.parse(statusIjin) == 1 
-            ? _approveAndRejectButton(kdIjin, diketahui)
+            ? _approveAndRejectButton(kdIjin, diketahui, namaKet, fcmToken)
             : _deleteButtonAndStatus(approvalOleh, statusIjin, kdIjin, diketahui),
             
             SizedBox(height: 8.0),
@@ -227,7 +291,8 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
               data[index]['approval_oleh'],
               data[index]['status_ijin'],
               data[index]['diketahui'] == '' ? data[index]['diketahui'] : '',
-              data[index]['kd_ijin']
+              data[index]['kd_ijin'],
+              data[index]['fcm_token']
           );
         }
       ),
@@ -243,8 +308,12 @@ class _PengajuanIjinState extends State<PengajuanIjin> {
           centerTitle: true,
           elevation: 0,
         ),
-        body: _listViewIjin(data),
-        floatingActionButton: FloatingActionButton(
+        body: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _refresh,
+          child: _listViewIjin(data)
+        ),
+        floatingActionButton: pegawai['level_jab'] == '0' || pegawai['level_jab'] == null ? SizedBox.shrink() : FloatingActionButton(
           onPressed: () async {
             dynamic res = await Navigator.pushNamed(context, '/add-pengajuan-ijin');
             if (res != null) {

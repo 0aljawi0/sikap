@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:http/http.dart';
+import 'package:async/async.dart';
+import 'package:path/path.dart';
 import 'dart:async';
 import 'dart:convert';
 import '../Library/constant.dart';
@@ -47,6 +51,44 @@ class Pegawai {
     }
 
     return data;
+  }
+
+  Future<Map> updateProfilPegawai(String kdPeg, String email, String telepon, File image) async {
+    Map output;
+    
+    try {
+
+      Uri url = Uri.parse(UPDATEPROFILPEGAWAI);
+      MultipartRequest request = new MultipartRequest('POST', url);
+
+      if (image == null) {
+        request.fields['kd_peg'] = kdPeg;
+        request.fields['email'] = email;
+        request.fields['telepon'] = telepon;
+        request.fields['isImage'] = 'tidak';
+
+      } else {
+        ByteStream stream = new ByteStream(DelegatingStream.typed(image.openRead()));
+        var length = await image.length();
+        MultipartFile multipartFile = new MultipartFile('image', stream, length, filename: basename(image.path));
+
+        request.fields['kd_peg'] = kdPeg;
+        request.fields['email'] = email;
+        request.fields['telepon'] = telepon;
+        request.fields['isImage'] = 'ada';
+        request.files.add(multipartFile);
+      }
+      
+      StreamedResponse response = await request.send();
+      String resString = await response.stream.bytesToString();
+      print(resString);
+      Map data = await jsonDecode(resString);
+      output = data;
+    } catch (e) {
+      print(e);
+    }
+    //print(output);
+    return output;
   }
 
   Future<void> updatePosisiPegawai(String kdPeg, String latitude, String longitude) async {

@@ -13,6 +13,7 @@ import 'package:sikap/Pages/profil.dart';
 import 'package:sikap/Pages/absen.dart';
 import 'package:sikap/Pages/home.dart';
 import 'package:sikap/Pages/login.dart';
+import 'package:sikap/Pages/updatePegawai.dart';
 import 'package:sikap/Services/storage.dart';
 
 import 'package:background_fetch/background_fetch.dart';
@@ -25,9 +26,11 @@ void backgroundFetchHeadlessTask(String taskId) async {
   print('[BackgroundFetch] Headless event received.');
 
   storage.readStorage().then((kode) async {
-    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    Pegawai pegawai = new Pegawai(kode);
-    pegawai.updatePosisiPegawai(kode, position.latitude.toString(), position.longitude.toString());
+    if(kode != null){
+      Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Pegawai pegawai = new Pegawai(kode);
+      pegawai.updatePosisiPegawai(kode, position.latitude.toString(), position.longitude.toString());
+    }
   });
 
   BackgroundFetch.finish(taskId);
@@ -50,7 +53,9 @@ void main() {
         '/data-apel' : (BuildContext context) => new DataApel(storage: storage),
         // add pages
         '/add-pengajuan-ijin' : (BuildContext context) => new AddPengajuanIjin(storage: storage),
-        '/add-agenda' : (BuildContext context) => new AddAgenda(storage: storage)
+        '/add-agenda' : (BuildContext context) => new AddAgenda(storage: storage),
+        // update pages
+        '/update-pegawai' : (BuildContext context) => new UpdatePegawai(storage: storage),
       },
     )
   );

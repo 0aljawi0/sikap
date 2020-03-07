@@ -20,7 +20,7 @@ class AgendaService {
     return output;
   }
 
-  Future<Map> postAgenda (String kdPeg, String tglKegiatan, String acara, String lokasi, String keterangan) async {
+  Future<Map> postAgenda (String kdPeg, String tglKegiatan, String acara, String lokasi, String keterangan, String jamAcara) async {
     Map output;
 
     try {
@@ -29,6 +29,7 @@ class AgendaService {
         'kd_peg': kdPeg,
         'tgl_kegiatan': tglKegiatan,
         'acara': acara,
+        'jam_acara': jamAcara,
         'lokasi_keg': lokasi,
         'ket_keg': keterangan
       };

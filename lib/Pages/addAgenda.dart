@@ -17,6 +17,8 @@ class _AddAgendaState extends State<AddAgenda> {
 
   String kdPeg = '';
   DateTime tglKegiatan = DateTime.now();
+  TimeOfDay waktuStart = TimeOfDay.now();
+  TimeOfDay waktuEnd = TimeOfDay.now();
   TextEditingController acara = new TextEditingController();
   TextEditingController lokasi = new TextEditingController();
   TextEditingController keterangan = new TextEditingController();
@@ -37,13 +39,51 @@ class _AddAgendaState extends State<AddAgenda> {
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: tglKegiatan,
-        firstDate: DateTime(2015, 8),
+        firstDate:  DateTime.now().subtract(Duration(days: 1)),
         lastDate: DateTime(2101));
     if (picked != null)
       setState(() {
         tglKegiatan = picked;
         viewDate = DateFormat.yMMMd().format(picked);
       });
+  }
+
+  Future<Null> _selectTimeStart(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: waktuStart,
+    );
+    if (picked != null)
+      setState(() {
+        waktuStart = picked;
+      });
+  }
+
+  Future<Null> _selectTimeEnd(BuildContext context) async {
+    final TimeOfDay picked = await showTimePicker(
+        context: context,
+        initialTime: waktuEnd,
+    );
+    if (picked != null)
+      setState(() {
+        waktuEnd = picked;
+      });
+  }
+
+  Widget _timePickerStart() {
+    return RaisedButton(
+      child: Text(waktuStart.format(context), style: TextStyle(color: Colors.white),),
+      color: Colors.orange.shade500,
+      onPressed: () => _selectTimeStart(context)
+    );
+  }
+
+  Widget _timePickerEnd() {
+    return RaisedButton(
+      child: Text(waktuEnd.format(context), style: TextStyle(color: Colors.white),),
+      color: Colors.orange.shade500,
+      onPressed: () => _selectTimeEnd(context)
+    );
   }
 
   Widget _datePicker() {
@@ -88,17 +128,17 @@ class _AddAgendaState extends State<AddAgenda> {
       child: RaisedButton(
         onPressed: (() {
           if(acara.text != '' && lokasi.text != '' && keterangan.text != '') {
-            agendaServide.postAgenda(kdPeg, tglKegiatan.toString(), acara.text, lokasi.text, keterangan.text)
+            agendaServide.postAgenda(kdPeg, tglKegiatan.toString(), acara.text, lokasi.text, keterangan.text, waktuStart.format(context)+' s/d '+waktuEnd.format(context))
             .then((body) {
               if (body['message'] != null || body['message'] != '') {
-                Fluttertoast.showToast(msg: body['message'], gravity: ToastGravity.TOP);
+                Fluttertoast.showToast(msg: body['message'], toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
                 Navigator.pop(context, {
                   'status': 200
                 });
               }
             });
           } else {
-            Fluttertoast.showToast(msg: 'Harap mengisi inputan data', gravity: ToastGravity.TOP);
+            Fluttertoast.showToast(msg: 'Harap mengisi inputan data', toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
           }
         }),
         color: Colors.orange,
@@ -127,6 +167,17 @@ class _AddAgendaState extends State<AddAgenda> {
               _datePicker(),
             ]
           ),
+
+          SizedBox(height: 5.0),
+          Row (
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget> [
+              _timePickerStart(),
+              SizedBox(width: 5.0),
+              _timePickerEnd()
+            ]
+          ),
+
           SizedBox(height: 5.0),
           _entryField('Lokasi', lokasi),
           SizedBox(height: 5.0),
@@ -143,7 +194,7 @@ class _AddAgendaState extends State<AddAgenda> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange[700],
-        title: Text('Pengajuan Ijin'),
+        title: Text('Agenda Kegiatan'),
         centerTitle: true,
         elevation: 0,
       ),

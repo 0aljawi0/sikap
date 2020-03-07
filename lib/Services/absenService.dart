@@ -39,16 +39,17 @@ class AbsenService {
       request.fields['kd_peg'] = kode;
       request.fields['latitude'] = latitude;
       request.fields['longitude'] = longitude;
-      request.fields['latitude_kantor'] = settings['lat_kantor'];
-      request.fields['longitude_kantor'] = settings['long_kantor'];
-      request.fields['jam_masuk'] = settings['jam_masuk'];
-      request.fields['jam_pulang'] = settings['jam_pulang'];
-      request.fields['radius'] = settings['radius_absen'];
+      request.fields['latitude_kantor'] = settings['setting']['lat_kantor'];
+      request.fields['longitude_kantor'] = settings['setting']['long_kantor'];
+      request.fields['jam_masuk'] = settings['shif']['waktu_masuk'];
+      request.fields['jam_pulang'] = settings['shif']['waktu_pulang'];
+      request.fields['radius'] = settings['setting']['radius_absen'];
       request.files.add(multipartFile);
+      print(latitude+' '+longitude);
 
       StreamedResponse response = await request.send();
       String resString = await response.stream.bytesToString();
-      //print(resString);
+      print(resString);
       Map data = await jsonDecode(resString);
       output = data;
     } catch (e) {
@@ -72,10 +73,10 @@ class AbsenService {
       request.fields['kd_peg'] = kode;
       request.fields['latitude'] = latitude;
       request.fields['longitude'] = longitude;
-      request.fields['latitude_apel'] = settings['lat_apel'];
-      request.fields['longitude_apel'] = settings['long_apel'];
-      request.fields['jam_apel'] = settings['jam_apel'];
-      request.fields['radius'] = settings['radius_apel'];
+      request.fields['latitude_apel'] = settings['setting']['lat_apel'];
+      request.fields['longitude_apel'] = settings['setting']['long_apel'];
+      request.fields['jam_apel'] = settings['setting']['jam_apel'];
+      request.fields['radius'] = settings['setting']['radius_apel'];
       request.files.add(multipartFile);
 
       StreamedResponse response = await request.send();
@@ -104,7 +105,7 @@ class AbsenService {
       request.fields['kd_peg'] = kode;
       request.fields['latitude'] = latitude;
       request.fields['longitude'] = longitude;
-      request.fields['jam_masuk'] = settings['jam_masuk'];
+      request.fields['jam_masuk'] = settings['shif']['waktu_masuk'];
       request.fields['kd_dinas_luar'] = kdDinasLuar;
       request.files.add(multipartFile);
 
@@ -154,6 +155,38 @@ class AbsenService {
       Map data = await jsonDecode(response.body);
       // print(data);
       output = data['body'];
+    } catch (e) {
+      print(e);
+    }
+
+    return output;
+  }
+
+  Future<Map> getDataApel (String kdPeg) async {
+    Map output;
+
+    try {
+      Uri url = Uri.parse(GETDATAAPEL+'?kd_peg='+kdPeg);
+      Response response = await get(url);
+      Map data = await jsonDecode(response.body);
+      // print(data);
+      output = data['body'];
+    } catch (e) {
+      print(e);
+    }
+
+    return output;
+  }
+
+  Future<Map> getDataAbsen (String kdPeg) async {
+    Map output;
+
+    try {
+      Uri url = Uri.parse(GETDATAABSEN+'?kd_peg='+kdPeg);
+      Response response = await get(url);
+      Map data = await jsonDecode(response.body);
+      // print(data);
+      output = data;
     } catch (e) {
       print(e);
     }

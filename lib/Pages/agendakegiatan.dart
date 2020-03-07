@@ -12,6 +12,7 @@ class AgendaKegiatan extends StatefulWidget {
 }
 
 class _AgendaKegiatanState extends State<AgendaKegiatan> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
   AgendaService agendaService = new AgendaService();
 
   String kdPeg = '';
@@ -34,6 +35,14 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
     });
   }
 
+  Future<Null> _refresh() {
+    return agendaService.getAgenda(kdPeg).then((list) {
+      setState(() {
+        data = list;
+      });
+    });
+  }
+
   Widget _textView(String text, IconData icon, Color color) {
     return Row (
       children: <Widget>[
@@ -52,7 +61,7 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
     );
   }
 
-  Widget _listData(String kdPeg, String kdKegiatan, String acara, String status, String tglKegiatan, String lokasi, String keterangan) {
+  Widget _listData(String kdPeg, String kdKegiatan, String acara, String status, String tglKegiatan, String lokasi, String keterangan, String jamAcara) {
     return Card(
       child: Container(
         padding: EdgeInsets.all(8.0),
@@ -66,6 +75,8 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
             ),
             
             _textView(tglKegiatan, Icons.date_range, Colors.grey.shade500),
+
+            _textView(jamAcara, Icons.date_range, Colors.grey.shade500),
             
             _textView(lokasi, Icons.map, Colors.green.shade500),
 
@@ -83,7 +94,7 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
                   style: TextStyle(color: int.parse(status) == 1 ? Colors.green.shade500 : Colors.red.shade500),
                 ),
                 SizedBox(width: 8.0),
-                kdPeg == '' ? SizedBox.shrink() : _deleteButtons(kdKegiatan)
+                kdPeg == '1' ? SizedBox.shrink() : _deleteButtons(kdKegiatan)
               ],
             ),
 
@@ -108,7 +119,8 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
               data[index]['status_keg'],
               data[index]['tgl_kegiatan'],
               data[index]['lokasi_keg'],
-              data[index]['ket_keg']
+              data[index]['ket_keg'],
+              data[index]['jam_acara']
           );
         }
       ),
@@ -143,7 +155,11 @@ class _AgendaKegiatanState extends State<AgendaKegiatan> {
           centerTitle: true,
           elevation: 0,
         ),
-        body: _listViewAgenda(data),
+        body: RefreshIndicator(
+          key: _refreshIndicatorKey,
+          onRefresh: _refresh,
+          child: _listViewAgenda(data)
+        ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             dynamic res = await Navigator.pushNamed(context, '/add-agenda');

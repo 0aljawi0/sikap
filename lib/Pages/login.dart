@@ -15,7 +15,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   TextEditingController kode = new TextEditingController();
-  String bgImage = 'img/sunrise.jpg';
+  String bgImage = 'img/login.jpeg';
 
 
   @override
@@ -44,13 +44,13 @@ class _LoginState extends State<Login> {
 
   Future<void> _auth() async {
     if(kode.text.length == 0) {
-      Fluttertoast.showToast(msg: 'Kode Pegawai Kosong', gravity: ToastGravity.TOP);
+      Fluttertoast.showToast(msg: 'Kode Pegawai Kosong', toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
     } else {
       Pegawai instance = new Pegawai(kode.text);
       await instance.auth();
       
       if (instance.namaPeg == null) {
-        Fluttertoast.showToast(msg: instance.msg, gravity: ToastGravity.TOP);
+        Fluttertoast.showToast(msg: instance.msg, toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
       } else {
         await widget.storage.writeStorage(instance.kdPeg);
         Navigator.pushReplacementNamed(context, '/home', arguments: {
@@ -106,34 +106,14 @@ class _LoginState extends State<Login> {
 
   //TITLE
   Widget _title() {
-    return RichText(
-      textAlign: TextAlign.center,
-      text: TextSpan(children: [
-        TextSpan(
-          text: 'e',
-          style: TextStyle(
-              fontSize: 30, fontWeight: FontWeight.w500, color: Colors.orange.shade600),
-        ),
-        TextSpan(
-          text: '-',
-          style: TextStyle(
-            color: Colors.orange, 
-            fontSize: 30, 
-            shadows: [
-              Shadow(
-                blurRadius: 20.0,
-                color: Colors.black,
-                offset: Offset(1.0, 1.0)
-              )
-            ]
-          )
-        ),
-        TextSpan(
-          text: 'Absenku',
-          style: TextStyle(
-              fontSize: 30, fontWeight: FontWeight.w500, color: Colors.white),
-        )
-      ]),
+    return Column(
+      children: <Widget>[
+        Image(image: AssetImage('assets/img/cilegon.png'), width: 100),
+        SizedBox(height: 8.0),
+        Image(image: AssetImage('assets/img/e-absen2.png'), width: 100),
+        SizedBox(height: 8.0),
+        Text('Diskominfo Kota Cilegon', style: TextStyle(color: Colors.white),)
+      ],
     );
   }
 

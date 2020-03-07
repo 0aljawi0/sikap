@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sikap/Services/ijinService.dart';
+import 'package:sikap/Services/messaging.dart';
+import 'package:sikap/Services/pegawai.dart';
+import 'package:sikap/Services/profilService.dart';
 import 'package:sikap/Services/storage.dart';
 import 'package:date_range_picker/date_range_picker.dart' as DateRangePicker;
 import 'package:intl/intl.dart';
@@ -17,6 +20,8 @@ class _AddPengajuanIjinState extends State<AddPengajuanIjin> {
   IjinService ijinService = new IjinService();
 
   String kdPeg = '';
+  String nama = '';
+  String tokenAtasan = '';
   String jenisIjin;
   DateTime _startDate = DateTime.now();
   DateTime _endDate = DateTime.now().add(Duration(days: 2));
@@ -33,10 +38,41 @@ class _AddPengajuanIjinState extends State<AddPengajuanIjin> {
     _initIjin();
   }
 
+  Future sendNotification() async {
+    final response = await Messaging.sendTo(
+      title: 'Permintaan Ijin',
+      body: 'Pegawai anda $nama meminta ijin dengan keperluan '+keperluan.text+', mohon persetujuan',
+      fcmToken: tokenAtasan,
+    );
+
+    if (response.statusCode != 200) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content:
+            Text('[${response.statusCode}] Error message: ${response.body}'),
+      ));
+    }
+  }
+
   Future<void> _initIjin(){
     widget.storage.readStorage().then((kode) {
       setState(() {
         kdPeg = kode;
+      });
+
+      Pegawai pegawai = Pegawai(kode);
+      pegawai.getProfil().then((res) {
+        setState(() {
+          nama = res['nama_peg'];
+        });
+      });
+
+      ProfilService profilService = ProfilService();
+      profilService.getTokenAtasan(kode).then((res) {
+        if (res != null) {
+          setState(() {
+            tokenAtasan = res['fcm_token'];
+          });
+        }
       });
     });
 
@@ -110,14 +146,16 @@ class _AddPengajuanIjinState extends State<AddPengajuanIjin> {
             ijinService.postIjinPengajuan(kdPeg, jenisIjin, _startDate.toString(), _endDate.toString(), keperluan.text, keterangan.text)
             .then((body) {
               if (body['message'] != null || body['message'] != '') {
-                Fluttertoast.showToast(msg: body['message'], gravity: ToastGravity.TOP);
+                Fluttertoast.showToast(msg: body['message'], toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
                 Navigator.pop(context, {
                   'status': 200
                 });
               }
             });
+
+            sendNotification();
           } else {
-            Fluttertoast.showToast(msg: 'Harap mengisi inputan data', gravity: ToastGravity.TOP);
+            Fluttertoast.showToast(msg: 'Harap mengisi inputan data', toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
           }
         }),
         color: Colors.orange,
@@ -151,7 +189,7 @@ class _AddPengajuanIjinState extends State<AddPengajuanIjin> {
             ],
           ),
           SizedBox(height: 5.0),
-          _entryField('Keterangan', keperluan),
+          _entryField('Keperluan', keperluan),
           SizedBox(height: 5.0),
           _entryField('Keterangan', keterangan, isTextArea: true),
           SizedBox(height: 8.0),

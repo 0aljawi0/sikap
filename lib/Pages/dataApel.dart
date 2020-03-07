@@ -15,12 +15,8 @@ class _DataApelState extends State<DataApel> {
   AbsenService absenService = new AbsenService();
   String kdPeg;
   Map data = {
-    'jumlah_dl': '',
-    'jumlah_ijin': '',
-    'jumlah_masuk': '',
-    'jumlah_sakit': '',
-    'jumlah_alfa': '',
-    'jumlah_cuti': ''
+    'jumlahMasuk': '',
+    'jumlahTidak': ''
   };
   List dataAbsensi = [];
 
@@ -32,10 +28,10 @@ class _DataApelState extends State<DataApel> {
         kdPeg = kode;
       });
 
-      absenService.getDataKehadiran(kode).then((res) {
+      absenService.getDataApel(kode).then((res) {
         setState(() {
           data = res;
-          dataAbsensi = res['data_absensi'];
+          dataAbsensi = res['dataAbsensi'];
         });
       });
     });
@@ -56,13 +52,13 @@ class _DataApelState extends State<DataApel> {
               SizedBox(
                 width: 120.0,
                 child: Text(
-                  DateFormat.yMMMMd().add_jms().format(DateTime.parse(value['tgl_absen'])),
+                  DateFormat.yMMMMd().add_jms().format(DateTime.parse(value['tgl_detail'])),
                   softWrap: true,
                 ),
               )
             ),
             DataCell(Text(value['jam_masuk'])),
-            DataCell(Text(value['ket_absen'])),
+            DataCell(Text(value['ket_apel'])),
           ]
         )).toList(),
       ),
@@ -78,49 +74,17 @@ class _DataApelState extends State<DataApel> {
         Chip(
           avatar: CircleAvatar(
             backgroundColor: Colors.indigo.shade500,
-            child: Text(data['jumlah_dl'].toString()),
+            child: Text(data['jumlahMasuk'].toString()),
           ),
-          label: Text('Dinas Luar')
+          label: Text('Apel')
         ),
 
         Chip(
           avatar: CircleAvatar(
             backgroundColor: Colors.blue.shade500,
-            child: Text(data['jumlah_ijin'].toString()),
+            child: Text(data['jumlahTidak'].toString()),
           ),
-          label: Text('Ijin')
-        ),
-
-        Chip(
-          avatar: CircleAvatar(
-            backgroundColor: Colors.green.shade500,
-            child: Text(data['jumlah_masuk'].toString()),
-          ),
-          label: Text('Masuk')
-        ),
-
-        Chip(
-          avatar: CircleAvatar(
-            backgroundColor: Colors.yellow.shade500,
-            child: Text(data['jumlah_sakit'].toString()),
-          ),
-          label: Text('Sakit')
-        ),
-
-        Chip(
-          avatar: CircleAvatar(
-            backgroundColor: Colors.red.shade500,
-            child: Text(data['jumlah_alfa'].toString()),
-          ),
-          label: Text('Alfa')
-        ),
-
-        Chip(
-          avatar: CircleAvatar(
-            backgroundColor: Colors.purple.shade500,
-            child: Text(data['jumlah_cuti'].toString()),
-          ),
-          label: Text('Cuti')
+          label: Text('Tidak Apel')
         ),
       ],
     );

@@ -28,6 +28,7 @@ class _DinasLuarState extends State<DinasLuar> {
   Map<String, dynamic> settings = {};
   bool isButtonDisabled = true;
   bool isImageProcess = false;
+  bool isSubmitProcess = false;
   TextEditingController kdDinasLuar = new TextEditingController();
 
   @override
@@ -60,17 +61,21 @@ class _DinasLuarState extends State<DinasLuar> {
   Future<void> postData() async {
     setState(() {
       isButtonDisabled = true;
+      isSubmitProcess = true;
     });
 
     absenService.postAbsenDinas(kode, kdDinasLuar.text, settings, _image, latitude, longitude)
       .then((res) {
         //print(res);
         if(res['body'] == null) {
-          Fluttertoast.showToast(msg: res['message'], gravity: ToastGravity.TOP);
+          Fluttertoast.showToast(msg: res['message'], toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
           setState(() {
             _image = null;
+            isSubmitProcess = false;
             kdDinasLuar.clear();
           });
+
+          Navigator.pop(context);
         }
       });
   }
@@ -133,7 +138,7 @@ class _DinasLuarState extends State<DinasLuar> {
 
   Widget _imagePreview() {
     return Container(
-        child: _image == null ? Image.asset('assets/img/avatar.png') : Image.file(_image),
+        child: _image == null ? Image.asset('assets/img/avatar.jpeg') : Image.file(_image),
     );
   }
 
@@ -157,6 +162,73 @@ class _DinasLuarState extends State<DinasLuar> {
     );
   }
 
+  Widget _dinasView() {
+    return SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => {
+                    getImageFromCamera()
+                  },
+                  child: isImageProcess ? _imageProcess() : _imagePreview(),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                'Klik gambar untuk mengambil foto',
+                style: TextStyle(fontSize: 12.0, color: Colors.grey.shade700),
+              )
+            ),
+            SizedBox(height: 5.0,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: _entryField('No Surat Dinas', kdDinasLuar),
+            ),
+            SizedBox(height: 5.0,),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Center(
+                child: RaisedButton(
+                  color: isButtonDisabled ? Colors.grey.shade300 : Colors.orange.shade600,
+                  onPressed: isButtonDisabled && kdDinasLuar.text == '' ? null : () {
+                    postData();
+                  },
+                  child: Text('Submit'),
+                ),
+              ),
+            )
+          ],
+      ),
+    );
+  }
+
+  Widget _submitProcess() {
+    return Center(
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              child: CircularProgressIndicator(),
+              width: 60,
+              height: 60,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Text('Submiting...'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,50 +238,7 @@ class _DinasLuarState extends State<DinasLuar> {
           centerTitle: true,
           elevation: 0,
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () => {
-                      getImageFromCamera()
-                    },
-                    child: isImageProcess ? _imageProcess() : _imagePreview(),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  'Klik gambar untuk mengambil foto',
-                  style: TextStyle(fontSize: 12.0, color: Colors.grey.shade700),
-                )
-              ),
-              SizedBox(height: 5.0,),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: _entryField('No Surat Dinas', kdDinasLuar),
-              ),
-              SizedBox(height: 5.0,),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Center(
-                  child: RaisedButton(
-                    color: isButtonDisabled ? Colors.grey.shade300 : Colors.orange.shade600,
-                    onPressed: (isButtonDisabled && kdDinasLuar.text == '' ? () {
-                      Fluttertoast.showToast(msg: 'Ambil Foto Terlebih Dahulu & Isi Kode Dinas', gravity: ToastGravity.TOP);
-                    } : () {
-                      postData();
-                    }),
-                    child: Text('Submit'),
-                  ),
-                ),
-              )
-            ],
-        ),
-      ),
+        body: isSubmitProcess ? _submitProcess() : _dinasView()
     );
   }
 }

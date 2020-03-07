@@ -65,24 +65,48 @@ class _AbsenState extends State<Absen> {
     absenService.postAbsen(kode, settings, _image, latitude, longitude)
       .then((res) {
         //print(res);
-        if(res['body'] == null) {
-          Fluttertoast.showToast(msg: res['message'], gravity: ToastGravity.TOP);
-          setState(() {
-            isButtonDisabled = false;
-            isSubmitProcess = false;
-          });
 
-        } else {
-          setState(() {
-            _image = null;
-            isSubmitProcess = false;
-          });
+        if(res['status'] == 200) {
 
-          Navigator.pushReplacementNamed(context, '/ijin', arguments: {
-            'kdunik' : res['body']['kdunik'],
-            'ijin' : res['body']['ijin']
-          });
+          if(res['body'] == null) {
+
+            Fluttertoast.showToast(msg: res['message'], toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
+            setState(() {
+              isButtonDisabled = false;
+              isSubmitProcess = false;
+            });
+
+            Navigator.pop(context, {
+              'status': 200
+            });
+
+          }
+
+        } else if (res['status'] == 203) {
+
+          if(res['body'] == null) {
+
+            Fluttertoast.showToast(msg: res['message'], toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
+            setState(() {
+              isButtonDisabled = false;
+              isSubmitProcess = false;
+            });
+
+          } else {
+            setState(() {
+              _image = null;
+              isSubmitProcess = false;
+            });
+
+            Navigator.pushReplacementNamed(context, '/ijin', arguments: {
+              'kdunik' : res['body']['kdunik'],
+              'ijin' : res['body']['ijin']
+            });
+          }
+
         }
+
+        
 
       });
   }
@@ -118,7 +142,7 @@ class _AbsenState extends State<Absen> {
 
   Widget _imagePreview() {
     return Container(
-        child: _image == null ? Image.asset('assets/img/avatar.png') : Image.file(_image),
+        child: _image == null ? Image.asset('assets/img/avatar.jpeg') : Image.file(_image),
     );
   }
 
@@ -164,39 +188,41 @@ class _AbsenState extends State<Absen> {
     );
   }
 
-  Widget _absenView() => Column(
-    children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: GestureDetector(
-            onTap: () => {
-              getImageFromCamera()
-            },
-            child: isImageProcess ? _imageProcess() : _imagePreview(),
+  Widget _absenView() => SingleChildScrollView(
+      child: Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Center(
+            child: GestureDetector(
+              onTap: () => {
+                getImageFromCamera()
+              },
+              child: isImageProcess ? _imageProcess() : _imagePreview(),
+            ),
           ),
         ),
-      ),
-      Padding(
-        padding: EdgeInsets.all(10.0),
-        child: Text(
-          'Klik gambar untuk mengambil foto',
-          style: TextStyle(fontSize: 12.0, color: Colors.grey.shade700),
+        Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Text(
+            'Klik gambar untuk mengambil foto',
+            style: TextStyle(fontSize: 12.0, color: Colors.grey.shade700),
+          )
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Center(
+            child: RaisedButton(
+              color: isButtonDisabled ? Colors.grey.shade300 : Colors.orange.shade600,
+              onPressed: isButtonDisabled ? null : () {
+                postData();
+              },
+              child: Text('Submit'),
+            ),
+          ),
         )
-      ),
-      Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Center(
-          child: RaisedButton(
-            color: isButtonDisabled ? Colors.grey.shade300 : Colors.orange.shade600,
-            onPressed: isButtonDisabled ? null : () {
-              postData();
-            },
-            child: Text('Submit'),
-          ),
-        ),
-      )
-    ],
+      ],
+    ),
   );
 
   @override

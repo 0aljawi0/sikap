@@ -1,0 +1,32 @@
+{
+    "project_info": {
+        "project_number": "943675704776",
+        "firebase_url": "https://e-absen-d6ad9.firebaseio.com",
+        "project_id": "e-absen-d6ad9",
+        "storage_bucket": "e-absen-d6ad9.appspot.com"
+    },
+    "client": [{
+        "client_info": {
+            "mobilesdk_app_id": "1:943675704776:android:cded61a0773762f712ecfd",
+            "android_client_info": {
+                "package_name": "com.querystudios.sikap"
+            }
+        },
+        "oauth_client": [{
+            "client_id": "943675704776-fv1as9p98fmh1nsnia8mocjsfi6436ii.apps.googleusercontent.com",
+            "client_type": 3
+        }],
+        "api_key": [{
+            "current_key": "AIzaSyDOYpcHfg7n5Qqgsr8J0FqX4ICmziFM17o"
+        }],
+        "services": {
+            "appinvite_service": {
+                "other_platform_oauth_client": [{
+                    "client_id": "943675704776-fv1as9p98fmh1nsnia8mocjsfi6436ii.apps.googleusercontent.com",
+                    "client_type": 3
+                }]
+            }
+        }
+    }],
+    "configuration_version": "1"
+}

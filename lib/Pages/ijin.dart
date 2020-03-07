@@ -23,7 +23,7 @@ class _IjinState extends State<Ijin> {
   TextEditingController keterangan = new TextEditingController();
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     widget.storage.readStorage().then((kode) {
       setState(() {
@@ -33,18 +33,21 @@ class _IjinState extends State<Ijin> {
   }
 
   Future<void> _submitIjin() async {
-    absenService.postIjin(kdPeg, data['kdunik'], data['ijin'], keperluan.text, keterangan.text)
-      .then((res) {
-        //print(res);
-        if (res != '' || res != null) {
-          Fluttertoast.showToast(msg: res, gravity: ToastGravity.TOP);
-          Navigator.pop(context);
-        }
-      });
+    absenService
+        .postIjin(kdPeg, data['kdunik'], data['ijin'], keperluan.text,
+            keterangan.text)
+        .then((res) {
+      //print(res);
+      if (res != '' || res != null) {
+        Fluttertoast.showToast(msg: res, toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
+        Navigator.pop(context);
+      }
+    });
   }
-  
+
   // ENTRY FIELD
-  Widget _entryField(String title, TextEditingController kontrol, {bool isPassword = false, bool isTextArea = false}) {
+  Widget _entryField(String title, TextEditingController kontrol,
+      {bool isPassword = false, bool isTextArea = false}) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -52,7 +55,10 @@ class _IjinState extends State<Ijin> {
         children: <Widget>[
           Text(
             title,
-            style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15, color: Colors.grey.shade800),
+            style: TextStyle(
+                fontWeight: FontWeight.w300,
+                fontSize: 15,
+                color: Colors.grey.shade800),
           ),
           SizedBox(
             height: 10,
@@ -89,17 +95,16 @@ class _IjinState extends State<Ijin> {
 
   @override
   Widget build(BuildContext context) {
-
     data = data.isNotEmpty ? data : ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
-       appBar: AppBar(
-          backgroundColor: Colors.orange[700],
-          title: Text('Pengajuan Ijin'),
-          centerTitle: true,
-          elevation: 0,
-        ),
-        body: Padding(
+      appBar: AppBar(
+        backgroundColor: Colors.orange[700],
+        title: Text('Pengajuan Ijin'),
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: Padding(
           padding: EdgeInsets.all(10.0),
           child: SingleChildScrollView(
             child: Column(
@@ -107,7 +112,8 @@ class _IjinState extends State<Ijin> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 SizedBox(height: 5.0),
-                Text(data['ijin'] == 1 ? 'Masuk Telat' : 'Pulang Cepat',
+                Text(
+                  data['ijin'] == 1 ? 'Masuk Telat' : 'Pulang Cepat',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.orange.shade600,
@@ -115,9 +121,10 @@ class _IjinState extends State<Ijin> {
                   ),
                 ),
                 SizedBox(height: 5.0),
-                Text(dateString,
+                Text(
+                  dateString,
                   textAlign: TextAlign.left,
-                  style: TextStyle (
+                  style: TextStyle(
                     color: Colors.grey.shade600,
                     fontSize: 14.0,
                   ),
@@ -130,8 +137,7 @@ class _IjinState extends State<Ijin> {
                 _submitButton(),
               ],
             ),
-          )
-        ),
+          )),
     );
   }
 }

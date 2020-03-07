@@ -27,6 +27,7 @@ class _AbsenApelState extends State<AbsenApel> {
   Map<String, dynamic> settings = {};
   bool isButtonDisabled = true;
   bool isImageProcess = false;
+  bool isSubmitProcess = false;
 
   @override
   void initState() { 
@@ -58,17 +59,33 @@ class _AbsenApelState extends State<AbsenApel> {
   Future<void> postData() async {
     setState(() {
       isButtonDisabled = true;
+      isSubmitProcess = true;
     });
 
     absenService.postAbsenApel(kode, settings, _image, latitude, longitude)
       .then((res) {
         //print(res);
-        if(res['body'] == null) {
-          Fluttertoast.showToast(msg: res['message'], gravity: ToastGravity.TOP);
-          setState(() {
-            _image = null;
-          });
+        if(res['status'] == 200) {
+          if(res['body'] == null) {
+            Fluttertoast.showToast(msg: res['message'], toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
+            setState(() {
+              _image = null;
+              isSubmitProcess = false;
+            });
+
+            Navigator.pop(context);
+          }
+        } else if(res['status'] == 203) {
+          if(res['body'] == null) {
+            Fluttertoast.showToast(msg: res['message'], toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP);
+            setState(() {
+              _image = null;
+              isButtonDisabled = false;
+              isSubmitProcess = false;
+            });
+          }
         }
+        
       });
   }
 
@@ -103,7 +120,29 @@ class _AbsenApelState extends State<AbsenApel> {
 
   Widget _imagePreview() {
     return Container(
-        child: _image == null ? Image.asset('assets/img/avatar.png') : Image.file(_image),
+        child: _image == null ? Image.asset('assets/img/avatar.jpeg') : Image.file(_image),
+    );
+  }
+
+  Widget _submitProcess() {
+    return Center(
+      child: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              child: CircularProgressIndicator(),
+              width: 60,
+              height: 60,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Text('Submiting...'),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -127,6 +166,45 @@ class _AbsenApelState extends State<AbsenApel> {
     );
   }
 
+  Widget _absenView() {
+    return SingleChildScrollView(
+          child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => {
+                    getImageFromCamera()
+                  },
+                  child: isImageProcess ? _imageProcess() : _imagePreview(),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                'Klik gambar untuk mengambil foto',
+                style: TextStyle(fontSize: 12.0, color: Colors.grey.shade700),
+              )
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Center(
+                child: RaisedButton(
+                  color: isButtonDisabled ? Colors.grey.shade300 : Colors.orange.shade600,
+                  onPressed: isButtonDisabled ? null : () {
+                    postData();
+                  },
+                  child: Text('Submit'),
+                ),
+              ),
+            )
+          ],
+        ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,42 +214,7 @@ class _AbsenApelState extends State<AbsenApel> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Center(
-              child: GestureDetector(
-                onTap: () => {
-                  getImageFromCamera()
-                },
-                child: isImageProcess ? _imageProcess() : _imagePreview(),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Text(
-              'Klik gambar untuk mengambil foto',
-              style: TextStyle(fontSize: 12.0, color: Colors.grey.shade700),
-            )
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Center(
-              child: RaisedButton(
-                color: isButtonDisabled ? Colors.grey.shade300 : Colors.orange.shade600,
-                onPressed: (isButtonDisabled ? () {
-                  Fluttertoast.showToast(msg: 'Ambil Foto Terlebih Dahulu', gravity: ToastGravity.TOP);
-                } : () {
-                  postData();
-                }),
-                child: Text('Submit'),
-              ),
-            ),
-          )
-        ],
-      ),
+      body: isSubmitProcess ? _submitProcess() : _absenView()
     );
   }
 }
