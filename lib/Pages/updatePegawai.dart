@@ -221,7 +221,7 @@ class _UpdatePegawaiState extends State<UpdatePegawai> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange[700],
-        title: Text('Agenda Kegiatan'),
+        title: Text('Edit Profil'),
         centerTitle: true,
         elevation: 0,
       ),
