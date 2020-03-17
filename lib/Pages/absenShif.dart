@@ -142,7 +142,7 @@ class _AbsenShifState extends State<AbsenShif> {
 
   Widget _imagePreview() {
     return Container(
-        child: _image == null ? Image.asset('assets/img/avatar.jpeg') : Image.file(_image),
+        child: _image == null ? Image.asset('assets/img/avatar.jpeg', width: 200,) : Image.file(_image, width: 200,),
     );
   }
 

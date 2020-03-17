@@ -222,7 +222,7 @@ class AbsenService {
       Uri url = Uri.parse(GETDATAABSEN+'?kd_peg='+kdPeg);
       Response response = await get(url);
       Map data = await jsonDecode(response.body);
-      print('DATA ABSEN '+data.toString());
+      //print('DATA ABSEN '+data.toString());
       output = data;
     } catch (e) {
       print(e);

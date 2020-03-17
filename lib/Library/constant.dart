@@ -1,7 +1,8 @@
 library constant;
 
-const String _host = "https://api.bravosolutionindonesia.com";
-const String _apiserver = "$_host/v1";
+const String _host = "https://bravosolutionindonesia.com";
+const String _apiHost = "https://api.bravosolutionindonesia.com";
+const String _apiserver = "$_apiHost/v1";
 
 // TEST SERVER
 const String TEST = '$_apiserver/test';

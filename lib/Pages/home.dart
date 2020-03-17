@@ -76,6 +76,8 @@ class _HomeState extends State<Home> {
       });
     });
 
+    
+
     _firebaseMessaging.onTokenRefresh.listen(sendTokenToServer);
     _firebaseMessaging.subscribeToTopic('all');
 
@@ -151,7 +153,7 @@ class _HomeState extends State<Home> {
     Choice(title: 'Agenda Kegiatan', icon: Icons.assignment, link: '/agenda-kegiatan'),
     Choice(title: 'Rekap Apel', icon: Icons.assignment, link: '/data-apel'),
     Choice(title: 'Profil', icon: Icons.assignment_ind, link: '/profil' ),
-    // Choice(title: 'Keluar', icon: Icons.arrow_forward, link: 'keluar' )
+    Choice(title: 'Keluar', icon: Icons.arrow_forward, link: 'keluar' )
   ];
 
 
@@ -173,20 +175,25 @@ class _HomeState extends State<Home> {
           child: Column(
             children: <Widget>[
               SizedBox(height: 30.0),
+
               Image(image: NetworkImage(logo), height: 100.0,),
+
               SizedBox(height: 5.0),
+
               Container(
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
                 child: Text(namaInstansi,
-                style: TextStyle(
-                  fontSize: 10.0,
-                  color: Colors.white
+                  style: TextStyle(
+                    fontSize: 10.0,
+                    color: Colors.white
+                  ),
+                  textAlign: TextAlign.center,
+                  softWrap: true,
                 ),
-                textAlign: TextAlign.center,
-                softWrap: true,
               ),
-              ),
+             
               SizedBox(height: 5.0),
+             
               Card(
                 color: Colors.brown,
                 child: Center(
@@ -233,6 +240,7 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
+             
               Expanded(
                 child: GridView.count(
                 crossAxisCount: 4,

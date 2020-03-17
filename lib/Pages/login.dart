@@ -72,16 +72,16 @@ class _LoginState extends State<Login> {
             title,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
           ),
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10,),
           TextField(
               controller: kontrol,
               obscureText: isPassword,
               decoration: InputDecoration(
                   border: InputBorder.none,
                   fillColor: Color(0xfff3f3f4),
-                  filled: true))
+                  filled: true
+              )
+          )
         ],
       ),
     );
@@ -92,9 +92,7 @@ class _LoginState extends State<Login> {
     return SizedBox(
       width: double.infinity,
       child: RaisedButton(
-        onPressed: (() => {
-            _auth()
-        }),
+        onPressed: () => _auth(),
         color: Colors.orange,
         child: Text(
           'Login',
@@ -118,13 +116,7 @@ class _LoginState extends State<Login> {
   }
 
   //KODE
-  Widget _kodeWidget() {
-    return Column(
-      children: <Widget>[
-        _entryField("Masukan Kode Pegawai", kode),
-      ],
-    );
-  }
+  Widget _kodeWidget() => _entryField("Masukan Kode Pegawai", kode);
 
   @override
   Widget build(BuildContext context) {
@@ -140,21 +132,22 @@ class _LoginState extends State<Login> {
           height: MediaQuery.of(context).size.height,
           child: Stack(
             children: <Widget>[
-              Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Expanded(flex: 3, child: SizedBox()),
-                      _title(),
-                      SizedBox(height: 50),
-                      _kodeWidget(),
-                      SizedBox(height: 20),
-                      _submitButton(),
-                      Expanded(flex: 2, child: SizedBox())
-                    ],
-                  ))
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal:20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(flex: 3, child: SizedBox()),
+                    _title(),
+                    SizedBox(height: 50),
+                    _kodeWidget(),
+                    SizedBox(height: 20),
+                    _submitButton(),
+                    Expanded(flex: 2, child: SizedBox())
+                  ],
+                ),
+              )
             ],
           )
         )
